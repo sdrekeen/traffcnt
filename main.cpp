@@ -191,7 +191,7 @@ void entferneUnsichtbarGewordeneObjekte(int frameCount)
     while (i < listeBewegteObjekte.size())
     {
         BewegtesObjekt &bo = listeBewegteObjekte[i];
-        //sofern das Objekt in den letzten 5 Bildern identifiziert wurde
+        //sofern das Objekt nicht in den letzten 5 Bildern identifiziert wurde, Annahme: hat gefilmten Bereich verlassen, entfernen
         if (frameCount - bo.lastFoundInFrame >= 5)
         {
             cout << "Entferne Objekt Id=" << bo.objektIndex << " (Listenpos. " << i <<") aus Tracking-Liste, da außerhalb Bild.\n";
