@@ -16,4 +16,5 @@ Compile hint: Let's say <OPENCV_PATH> is the path, where opencv files are placed
 `g++ main.cpp -o traffcnt -I<OPENCV_PATH>/include -L<OPENCV_PATH>/lib -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_video -lopencv_imgproc -lopencv_core`
 
 For instance <OPENCV_PATH> is /usr/local/Cellar/opencv/3.4.0 then:
+
 `g++ main.cpp -o traffcnt -I/usr/local/Cellar/opencv/3.4.0/include -L/usr/local/Cellar/opencv/3.4.0/lib -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_video -lopencv_imgproc -lopencv_core`
