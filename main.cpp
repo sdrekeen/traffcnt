@@ -1,3 +1,7 @@
+// Traffic counting by use of opencv library
+// Steve Dreger, November 2017 - January 2018
+// ------------------------------------------
+
 #include <opencv2/highgui.hpp>
 #include <opencv2/video.hpp>
 #include <iostream>
@@ -10,7 +14,7 @@ const int CONST_VEHICLE_TYPE_BIKE = 1;      //id für typ Rad
 const int CONST_VEHICLE_TYPE_CAR  = 2;      //id für typ auto
 const int CONST_VEHICLE_TYPE_TRAM = 3;      //id für typ lkw/tram
 const double CONST_MIN_OBJSIZE = 8000.0;    //mindestgröße für ein zu verfolgendes Objekt
-const int CONST_MAX_DISTANZ = 100;          //max. Abstand zwischen zwei Positionen damit als gleiches Objekt erkannt
+const int CONST_MAX_DISTANZ = 150;          //max. Abstand zwischen zwei Positionen damit als gleiches Objekt erkannt (schneller PC evtl. heruntersetzen)
 const int CONST_MIN_GROESSE_AUTO = 18000;   //min. größe damit Objekt als Auto erkannt wird
 const int CONST_MIN_GROESSE_LKWTRAM = 80000;//min größe, damit Objekt als LKW/TRAM erkannt wird
 
@@ -30,6 +34,16 @@ int bikeCountR   = 0;       //...
 int tramCountR   = 0;       //...
 int iBildZaehler = 0;       //Zähler Nummer angezeigtes Frame im Film
 int objektZaehlerTotal = 0;
+char timestamp[22];
+
+char* getTimeString()
+{
+	time_t Zeitstempel = time(0); 
+	tm *nun = localtime(&Zeitstempel);
+	strftime(timestamp, 22, "%d.%m.%Y %H:%M:%S: ", nun);
+	return timestamp;
+}
+
 
 //Klasse für ein verfolgtes Objekt
 class BewegtesObjekt
@@ -92,26 +106,28 @@ class BewegtesObjekt
             if (groesse < CONST_MIN_GROESSE_AUTO)
             {
                 typ = CONST_VEHICLE_TYPE_BIKE;
+		cout << getTimeString() << "Objekt "<< objektIndex << " als Passant/Rad klassifiziert "<< " (Groesse: " << groesse << ")" << endl ;
                 if (mittelpunkt_last.x < mittelpunkt.x) bikeCountR++; else bikeCountL++;
             }
             else if (groesse < CONST_MIN_GROESSE_LKWTRAM)
             {
                 typ = CONST_VEHICLE_TYPE_CAR;
+		cout << getTimeString() << "Objekt "<< objektIndex << " als Auto klassifiziert "<< " (Groesse: " << groesse << ")" << endl ;
                 if (mittelpunkt_last.x < mittelpunkt.x) carCountR++; else carCountL++;
             }
             else
             {
                 typ = CONST_VEHICLE_TYPE_TRAM;
+		cout << getTimeString() << "Objekt "<< objektIndex << " als LKW/Tram klassifiziert "<< " (Groesse: " << groesse << ")" << endl ;
                 if (mittelpunkt_last.x < mittelpunkt.x) tramCountR++; else tramCountL++;
             }
-            cout << "Zaehle Typ "<<typ << " Groesse: " << groesse<<endl;
+        
         }
 
     }
 };
 vector<BewegtesObjekt> listeBewegteObjekte; // liste aller gerade verfolgten Objekte
 void mainLoop(VideoCapture capture);
-
 
 int main(int argc, char* argv[])
 {
@@ -120,7 +136,7 @@ int main(int argc, char* argv[])
     createTrackbar( " Schwellwert:", "Verkehr zaehlen ...", &thresh, 255);
 
     //Videoquelle öffnen
-    VideoCapture capture("/home/steve/dispimg/bin/Debug/fe48.webm");
+    VideoCapture capture("fe48.webm");
     //VideoCapture capture(0);
     if(capture.isOpened())
     {
@@ -135,7 +151,7 @@ int main(int argc, char* argv[])
     else
     {
         //error in opening the video input
-        cout << "Kann Standard-WebCam nicht oeffnen." << endl;
+        cout << getTimeString() << "Kann Standard-WebCam nicht oeffnen." << endl;
         exit(EXIT_FAILURE);
     }
 
@@ -175,7 +191,7 @@ int findeExistierendesOderErstelleNeuesObjekt(vector<Point>  umriss, int frameCo
     BewegtesObjekt bewObj = BewegtesObjekt(p, boundRect, objektZaehlerTotal, frameCount);
     listeBewegteObjekte.push_back(bewObj);
     objektZaehlerTotal++;
-    cout << "Neues Objekt Id="<< objektZaehlerTotal << "\n";
+    cout << getTimeString() << "Neues Objekt Id="<< objektZaehlerTotal-1 << "\n";
     return listeBewegteObjekte.size()-1;
 }
 
@@ -186,10 +202,10 @@ void entferneUnsichtbarGewordeneObjekte(int frameCount)
     while (i < listeBewegteObjekte.size())
     {
         BewegtesObjekt &bo = listeBewegteObjekte[i];
-        //sofern das Objekt nicht in den letzten 5 Bildern identifiziert wurde, Annahme: hat gefilmten Bereich verlassen, entfernen
+        //sofern das Objekt in den letzten 5 Bildern identifiziert wurde
         if (frameCount - bo.lastFoundInFrame >= 5)
         {
-            cout << "Entferne Objekt Id=" << bo.objektIndex << " (Listenpos. " << i <<") aus Tracking-Liste, da außerhalb Bild.\n";
+            cout << getTimeString() << "Entferne Objekt Id=" << bo.objektIndex << " (Listenpos. " << i <<") aus Tracking-Liste, da außerhalb Bild.\n";
             listeBewegteObjekte.erase(listeBewegteObjekte.begin()+i);
         }
         else
@@ -258,7 +274,6 @@ void mainLoop(VideoCapture capture) {
         legende.copyTo(frame(Rect(0, 0, legende.cols, legende.rows)));
         putText(frame, vehicleCountDisplay.str(), Point (10,18), FONT_HERSHEY_SIMPLEX, 0.6, Scalar (0,0,0), 1);
         imshow("Verkehr zaehlen ...", frame);
-
         //Tastatureingabe prüfen
         keyboard = (char)waitKey( 30 );
         //alle 100 Bilder aufräumen
