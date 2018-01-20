@@ -1,6 +1,7 @@
 # traffcnt
-Traffic counting based on opencv (Background-substraction and findContours) and after the basic ideas for object tracking through the different frames in a reference-program by Chris D. see https://github.com/MicrocontrollersAndMore/OpenCV_3_Car_Counting_Cpp
-To build and run the opencv-libraries must be installed, developed under version opencv 3.4 - download or build f.i. see: https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html 
+This program is for traffic counting and is based on the OpenCV project (mainly using background-substraction and find-contours in OpenCV). The idea for object tracking algorithm I found in the coding from Chris D. see https://github.com/MicrocontrollersAndMore/OpenCV_3_Car_Counting_Cpp
+
+To build and run this you must install the OpenCV-libraries version 3.4 or later, here a guide for Linux: https://docs.opencv.org/trunk/d7/d9f/tutorial_linux_install.html 
 
 
 Changes: 
@@ -9,7 +10,7 @@ Changes:
 - added a simple approach to build different classes of moving objects just by object's-size
 - german explainations in source-code
 
-Info picture used for legend.png, which is loaded to have more beatufied counting panel on windows top is not included here on github, as there is no public license for this. So be creative and find or draw your own ... :->
+At the beginning of the code a picture legend.png is loaded, which give a beautified background for the top-bar with the counters. It is not included here, as there is no public license for this. So be creative and find or draw your own ... :->
 
 Compile hint: Let's say <OPENCV_PATH> is the path, where opencv files are placed then compile it by 
 
