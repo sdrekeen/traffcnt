@@ -7,7 +7,7 @@ To build and run this you must install the OpenCV-libraries version 3.4 or later
 Changes: 
 - suitable now for ordinary g++ on linux, changing some syntax
 - detects direction and has distinct counters per direction 
-- added a simple approach to build different classes of moving objects just by object's-size
+- added a simple approach to distinguish between three classes of moving objects just by object's-size f.i. bicycles, cars, trucks
 - german explainations in source-code
 
 At the beginning of the code a picture legend.png is loaded, which give a beautified background for the top-bar with the counters. It is not included here, as there is no public license for this. So be creative and find or draw your own ... :->
